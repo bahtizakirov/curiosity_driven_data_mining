@@ -9,17 +9,12 @@ from oauth2client.file import Storage
 import pandas as pd
 import datetime
 
+#Core code from https://developers.google.com/google-apps/calendar/quickstart/python
 
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 CLIENT_SECRET_FILE = './oauth_calendar_stats.json'
 APPLICATION_NAME = 'Python'
 
-#try:
-#    import argparse
-#    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-
-#except ImportError:
-#    flags = None
 
 class GoogleCalendar:
     def get_credentials(self):
@@ -40,7 +35,7 @@ class GoogleCalendar:
             print('Storing credentials to ' + credential_path)
         return credentials
 
-    def __init__(self,calendar_email, number_of_events):
+    def __init__(self,calendar_email, date_min, date_max):
 
 
         """Shows basic usage of the Google Calendar API.
@@ -56,27 +51,32 @@ class GoogleCalendar:
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('calendar', 'v3', http=http)
 
-        now = datetime.datetime(2013, 3, 1).isoformat() + 'Z' # 'Z' indicates UTC time
-        status = 'Getting the upcoming 10 events'
         eventsResult = service.events().list(
-            calendarId=calendar_email, timeMin=now, maxResults=number_of_events, singleEvents=True,
+            calendarId=calendar_email,
+            timeMin=date_min,
+            timeMax=date_max,
+            singleEvents=True,
+            maxResults=1000000,
             orderBy='startTime').execute()
         events = eventsResult.get('items', [])
+
         if not events:
             status = 'No upcoming events found.'
+        else:
+            status = str(len(events)) + " events found"
         all_events_df = pd.DataFrame()
         print("loading events into dataframe")
         event_num = 0
         for event in events:
             event_num += 1
-            print(event_num)
+            if event_num % 100 == 0:
+                print(str(event_num) + " events processed")
             event_properties = []
             for property in event:
                 if property == "start":
                     start = event['start'].get('dateTime', event['start'].get('date'))
                     start = start.replace('-05:00',"")
                     start = start.replace('-04:00',"")
-                    event['start'] = start
                     try:
                         event['start'] = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
                     except:
@@ -87,6 +87,8 @@ class GoogleCalendar:
                 all_events_df = temp_series
             else:
                 all_events_df = all_events_df.append(temp_series)
+            all_events_df["start"] = pd.to_datetime(all_events_df["start"])
+            all_events_df["startDate"] = all_events_df["start"].dt.date
 
         self.events_df = all_events_df
         self.status = status

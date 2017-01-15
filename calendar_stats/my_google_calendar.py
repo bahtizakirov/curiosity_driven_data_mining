@@ -8,6 +8,7 @@ from oauth2client import tools
 from oauth2client.file import Storage
 import pandas as pd
 import datetime
+import re
 
 #Core code from https://developers.google.com/google-apps/calendar/quickstart/python
 
@@ -71,23 +72,24 @@ class GoogleCalendar:
             if event_num % 100 == 0:
                 print(str(event_num) + " events processed")
             event_properties = []
+            #create data frame and adding start_date
+            event['start_date'] = ''
             for property in event:
                 if property == "start":
-                    start = event['start'].get('dateTime', event['start'].get('date'))
-                    start = start.replace('-05:00',"")
-                    start = start.replace('-04:00',"")
+                    start_date_time = event['start'].get('dateTime', event['start'].get('date'))
+                    start_date = re.sub(r'-\d{2}:\d{2}',"",start_date_time)
                     try:
-                        event['start'] = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
+                        event['start_date'] = datetime.datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%S')
                     except:
-                        event['start'] = datetime.datetime.strptime(start, '%Y-%m-%d')
+                        event['start_date'] = datetime.datetime.strptime(start_date, '%Y-%m-%d')
                 event_properties.append(event[property])
             temp_series = pd.DataFrame([event_properties], columns=event.keys())
             if all_events_df.empty:
                 all_events_df = temp_series
             else:
                 all_events_df = all_events_df.append(temp_series)
-            all_events_df["start"] = pd.to_datetime(all_events_df["start"])
-            all_events_df["startDate"] = all_events_df["start"].dt.date
+            all_events_df["start_date"] = pd.to_datetime(all_events_df["start_date"])
+            all_events_df["start_date"] = all_events_df["start_date"].dt.date
 
         self.events_df = all_events_df
         self.status = status

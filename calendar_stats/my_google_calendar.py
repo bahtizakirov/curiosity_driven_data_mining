@@ -15,7 +15,6 @@ SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 CLIENT_SECRET_FILE = './oauth_calendar_stats.json'
 APPLICATION_NAME = 'Python'
 
-
 class GoogleCalendar:
     def get_credentials(self):
 

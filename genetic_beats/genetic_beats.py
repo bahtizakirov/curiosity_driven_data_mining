@@ -4,10 +4,10 @@ import numpy
 import os
 pg.mixer.init()
 pg.init()
-num_generations = 2
+num_generations = 3
 num_notes = 8
-num_saved_progeny = 2
-num_progeny = 3
+num_saved_progeny = 1
+num_progeny = 2
 num_loops = 2
 tempo = 120
 beat_length = (60/tempo)*(4/num_notes)
@@ -20,7 +20,7 @@ sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curi
 sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/car_door.wav")))
 sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/whiff.wav")))
 num_sounds = len(sounds)
-sound_names  = ['hi','kick','snare']
+sound_names  = ['K','S','H']
 def array_of_random_integers(length, max_int):
     rand_int_array = []
     for i in range(0,length):
@@ -78,26 +78,25 @@ def find_top_n_indices(list, n):
     return top_n_indices
 
 def play_beat(beat):
-    print(beat)
     stacked_beat = []
     for x in range(0, num_loops):
-        print("loop")
+        beat_string = ""
         for i in range(0, num_notes):
-            beat_string = ""
-
+            note_string = ""
             time.sleep(beat_length)
             for j in range(0, num_sounds):
                 beat_index = i+(num_notes-1)*j
                 if beat[beat_index]:
                     sounds[j].play()
-                    beat_string += "-" + sound_names[j]
-            print(beat_string)
+                    note_string += "-" + sound_names[j]
+            beat_string += note_string + " | "
+        print(beat_string)
 #evolve num_generations
 last_generation = create_inital_generation(sounds)
 
 for x in range(0,num_generations):
     #mate pairs of members of current generation
-    print("generation" + str(x))
+    print("generation: " + str(x))
     next_generation = create_next_generation(last_generation)
     saved_progeny = identify_fit_progeny(next_generation)
     last_generation = saved_progeny

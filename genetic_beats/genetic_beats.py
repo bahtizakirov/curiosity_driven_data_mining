@@ -5,13 +5,13 @@ import os
 from datetime import datetime
 pg.mixer.init()
 pg.init()
-num_generations = 3
+num_generations = 4
 num_initial_members = 2
 num_progeny_per_mating = 3
 num_saved_progeny_per_generation = 2
-note_subdivision = 8
+note_subdivision = 16
 num_loops = 2
-tempo = 110
+tempo = 70
 beat_length = (60/tempo)*(4 / note_subdivision)
 mutation_rate = .1
 print("beat_length: " + str(beat_length))
@@ -21,12 +21,14 @@ pg.mixer.set_num_channels(19)
 sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/kick.wav")))
 sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/snare.wav")))
 sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/hi_hat.wav")))
+sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/clave.wav")))
+
 num_sounds = len(sounds)
 sound_lengths = []
 for sound in sounds:
     sound_lengths.append(sound.get_length())
 print(sound_lengths)
-sound_names  = ['K','S','H']
+sound_names  = ['K','S','H','C']
 
 def array_of_random_integers(length, max_int):
     rand_int_array = []
@@ -114,7 +116,7 @@ def play_beat(beat, num_loops):
 #evolve num_generations
 last_generation = create_inital_generation(sounds)
 
-for x in range(0,num_generations):
+for x in range(0,num_generations+1):
     #mate pairs of members of current generation
     print("generation: " + str(x))
     next_generation = create_next_generation(last_generation)

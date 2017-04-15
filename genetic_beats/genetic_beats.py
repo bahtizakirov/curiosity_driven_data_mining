@@ -8,9 +8,10 @@ num_generations = 2
 num_notes = 8
 num_saved_progeny = 2
 num_progeny = 3
-num_loops = 4
+num_loops = 2
 tempo = 120
 beat_length = (60/tempo)*(4/num_notes)
+mutation_rate = .1
 print("beat_length: " + str(beat_length))
 sounds = []
 hi_hat = pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/boom.wav")
@@ -50,6 +51,7 @@ def mate_current_pair(father,mother):
         child_beat = []
         for y in range(0, len(father)):
             inhereted_beat = get_inherited_beat(father[y],mother[y])
+            mutated_beat = inhereted_beat if numpy.random.randint(0,101) > mutation_rate*100 else 1 - inhereted_beat
             child_beat.append(inhereted_beat)
         current_generation_beats.append(child_beat)
     return current_generation_beats

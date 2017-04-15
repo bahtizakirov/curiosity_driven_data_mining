@@ -8,10 +8,10 @@ pg.init()
 num_generations = 3
 num_initial_members = 2
 num_progeny_per_mating = 3
-num_saved_progeny = 2
-note_subdivision = 16
+num_saved_progeny_per_generation = 2
+note_subdivision = 8
 num_loops = 2
-tempo = 70
+tempo = 110
 beat_length = (60/tempo)*(4 / note_subdivision)
 mutation_rate = .1
 print("beat_length: " + str(beat_length))
@@ -79,7 +79,7 @@ def identify_fit_progeny(next_generation):
         play_beat(beat, num_loops)
         fitness = input("score beat\n")
         next_generation_fitness.append(int(fitness))
-    saved_progeny_indices = find_top_n_indices(next_generation_fitness, num_saved_progeny)
+    saved_progeny_indices = find_top_n_indices(next_generation_fitness, num_saved_progeny_per_generation)
     return [next_generation[i] for i in saved_progeny_indices]
 
 def find_top_n_indices(list, n):
@@ -88,26 +88,29 @@ def find_top_n_indices(list, n):
 
 def play_beat(beat, num_loops):
     stacked_beat = []
-    for x in range(0, num_loops):
-        beat_string = ""
-        for i in range(0, note_subdivision):
-            note_string = ""
-            max_sound_length = 0
-            #start_beat = datetime.now()
-            #print("start beat " + str(start_beat))
-            for j in range(0, num_sounds):
-                beat_index = i+ (note_subdivision - 1) * j
-                if beat[beat_index]:
-                    sounds[j].play()
-                    if(max_sound_length < sound_lengths[j]):
-                        max_sound_length = sound_lengths[j]
-                    note_string += "-" + sound_names[j]
-            beat_string += note_string + " | "
-            #print(str(max_sound_length) + " " + str(beat_length))
-            time.sleep(beat_length)
-            #end_beat = str(datetime.now()-start_beat)
-            #print("end_beat " + end_beat)
-        print(beat_string)
+    try:
+        for x in range(0, num_loops):
+            beat_string = ""
+            for i in range(0, note_subdivision):
+                note_string = ""
+                max_sound_length = 0
+                #start_beat = datetime.now()
+                #print("start beat " + str(start_beat))
+                for j in range(0, num_sounds):
+                    beat_index = i+ (note_subdivision - 1) * j
+                    if beat[beat_index]:
+                        sounds[j].play()
+                        if(max_sound_length < sound_lengths[j]):
+                            max_sound_length = sound_lengths[j]
+                        note_string += "-" + sound_names[j]
+                beat_string += note_string + " | "
+                #print(str(max_sound_length) + " " + str(beat_length))
+                time.sleep(beat_length)
+                #end_beat = str(datetime.now()-start_beat)
+                #print("end_beat " + end_beat)
+            print(beat_string)
+    except KeyboardInterrupt:
+        print("interrupted")
 #evolve num_generations
 last_generation = create_inital_generation(sounds)
 

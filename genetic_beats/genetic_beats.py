@@ -9,22 +9,23 @@ num_generations = 3
 num_initial_members = 2
 num_progeny_per_mating = 3
 num_saved_progeny = 2
-num_notes = 6
+note_subdivision = 16
 num_loops = 2
-tempo = 90
-beat_length = (60/tempo)*(4/num_notes)
+tempo = 70
+beat_length = (60/tempo)*(4 / note_subdivision)
 mutation_rate = .1
 print("beat_length: " + str(beat_length))
 sounds = []
 hi_hat = pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/boom.wav")
 pg.mixer.set_num_channels(19)
-sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/punch.wav")))
-sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/car_door.wav")))
-sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/whiff.wav")))
+sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/kick.wav")))
+sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/snare.wav")))
+sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/hi_hat.wav")))
 num_sounds = len(sounds)
 sound_lengths = []
 for sound in sounds:
     sound_lengths.append(sound.get_length())
+print(sound_lengths)
 sound_names  = ['K','S','H']
 
 def array_of_random_integers(length, max_int):
@@ -39,7 +40,7 @@ def create_inital_generation(sounds):
     for j in range(0, num_initial_members):
         current_member = []
         for i in range(0, num_sounds):
-            current_member = current_member + array_of_random_integers(num_notes,2)
+            current_member = current_member + array_of_random_integers(note_subdivision, 2)
         last_generation.append(current_member)
     return last_generation
 
@@ -75,7 +76,7 @@ def identify_fit_progeny(next_generation):
     next_generation_fitness = []
     for beat in next_generation:
         #play beat to rate fitness
-        play_beat(beat)
+        play_beat(beat, num_loops)
         fitness = input("score beat\n")
         next_generation_fitness.append(int(fitness))
     saved_progeny_indices = find_top_n_indices(next_generation_fitness, num_saved_progeny)
@@ -85,17 +86,17 @@ def find_top_n_indices(list, n):
     top_n_indices = sorted(range(len(list)), key=lambda x: list[x])[-n-1:]
     return top_n_indices
 
-def play_beat(beat):
+def play_beat(beat, num_loops):
     stacked_beat = []
     for x in range(0, num_loops):
         beat_string = ""
-        for i in range(0, num_notes):
+        for i in range(0, note_subdivision):
             note_string = ""
             max_sound_length = 0
             #start_beat = datetime.now()
             #print("start beat " + str(start_beat))
             for j in range(0, num_sounds):
-                beat_index = i+(num_notes-1)*j
+                beat_index = i+ (note_subdivision - 1) * j
                 if beat[beat_index]:
                     sounds[j].play()
                     if(max_sound_length < sound_lengths[j]):
@@ -116,5 +117,6 @@ for x in range(0,num_generations):
     next_generation = create_next_generation(last_generation)
     saved_progeny = identify_fit_progeny(next_generation)
     last_generation = saved_progeny
+
 for beat in last_generation:
-    play_beat(beat)
+    play_beat(beat, 4)

@@ -6,14 +6,14 @@ from datetime import datetime
 pg.mixer.init()
 pg.init()
 num_generations = 4
-num_initial_members = 2
-num_progeny_per_mating = 3
-num_saved_progeny_per_generation = 2
-note_subdivision = 16
+num_initial_members = 3
+num_progeny_per_mating = 2
+num_saved_progeny_per_generation = 3
+note_subdivision = 8
 num_loops = 2
-tempo = 70
+tempo = 100
 beat_length = (60/tempo)*(4 / note_subdivision)
-mutation_rate = .1
+mutation_rate = .4
 print("beat_length: " + str(beat_length))
 sounds = []
 hi_hat = pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/boom.wav")

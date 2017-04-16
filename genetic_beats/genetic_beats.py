@@ -16,7 +16,7 @@ beat_length = (60/tempo)*(4 / note_subdivision)
 mutation_rate = .4
 print("beat_length: " + str(beat_length))
 sounds = []
-hi_hat = pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/boom.wav")
+
 pg.mixer.set_num_channels(19)
 sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/kick.wav")))
 sounds.append(pg.mixer.Sound(pg.mixer.Sound("/Users/ianborukhovich/Projects/curiosity_driven_data_mining/genetic_beats/snare.wav")))
